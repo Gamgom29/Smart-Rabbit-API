@@ -55,7 +55,32 @@ const register = asyncWrapper(
     }
 );
 
-const login = ()=>{};
+const login =asyncWrapper(
+    async (req, res, next) => {
+        const {email, password} = req.body;
+        const customer = await Customer.findOne({where:{email}});
+        if(!customer){
+            return next(appError.create('User Not Found', 401, httpTextStatus.FAIL));
+        }
+        const isMatch = await bcrypt.compare(password, customer.password);
+        if(!isMatch){
+            return next(appError.create('Invalid Email Or Password', 401, httpTextStatus.FAIL));
+        }
+        const token = jwt.sign({email: customer.email  , phone: customer.phone} , process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE})
+        customer.Token = token;
+        await customer.save();
+        res.status(200).json({status:httpTextStatus.SUCCESS, data:{customer:{
+            id:customer.id,
+            name: customer.name,
+            email: customer.email,
+            phone: customer.phone,
+            Token: token,
+            createdAt:customer.createdAt,
+            updatedAt:customer.updatedAt,
+        }}});
+    }
+
+);
 
 module.exports = {
     register,
