@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 })
 app.use('/api/uploads',express.static(path.join(__dirname , 'uploads')));
 app.use('/api/customers',require('./Routes/customerRoutes'));
-
+app.use('/api/orders' , require('./Routes/orderRoutes'));
 /* app.all('*' , (req, res,next)=>{
 
 }) */

@@ -33,7 +33,6 @@ const register = asyncWrapper(
         }
         const token = jwt.sign({email: data.email  , phone: data.phone} , process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE})
         const hashedPassword = await bcrypt.hash(data.password, 10);
-
         if(files){
             if(!files['nationalIdPhotoFace']  ||!files['nationalIdPhotoBack'] || !files['taxNumberPhoto'] ){
                 return next(appError.create('There is Missed Photos ' , 500 , httpTextStatus.FAIL));
