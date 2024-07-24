@@ -14,7 +14,7 @@ const registerSchema = joi.object({
     }),
     passwordConfirm:joi.string().valid(joi.ref('password')).required().messages({
         message: 'Password confirmation does not match'
-    })
+    }),
 }).unknown(true);
 
 const register = asyncWrapper(
@@ -26,7 +26,7 @@ const register = asyncWrapper(
         const files = req.files;
         //console.log(files);
         const data = req.body;
-        const oldCustomer = await Customer.findOne({where:{email: data.email}});
+        const oldCustomer = await Customer.findOne({where:{phone: data.phone}});
         if(oldCustomer){
             const error = appError.create('User Already Exists' , 400 , httpTextStatus.FAIL);
             return next(error);
@@ -56,8 +56,8 @@ const register = asyncWrapper(
 
 const login =asyncWrapper(
     async (req, res, next) => {
-        const {email, password} = req.body;
-        const customer = await Customer.findOne({where:{email}});
+        const {phone, password} = req.body;
+        const customer = await Customer.findOne({where:{phone}});
         if(!customer){
             return next(appError.create('User Not Found', 401, httpTextStatus.FAIL));
         }

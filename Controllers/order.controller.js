@@ -21,7 +21,7 @@ const getOrder = asyncWrapper(
 );
 const orderSchema = joi.object({
     pickDate : joi.date().required(),
-})
+}).unknown(true)
 const CreateOrder = asyncWrapper(
     async (req,res,next)=>{
         const validation = orderSchema.validate(req.body);
@@ -42,7 +42,6 @@ const CreateOrder = asyncWrapper(
             return res.status(201).json({status: httpTextStatus.SUCCESS, data:{order}});
     }
 )
-
 
 module.exports = {
     getOrder,

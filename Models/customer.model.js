@@ -26,7 +26,6 @@ const customer = sequelize.define('customers',{
         type: DataTypes.STRING,
         allowNull: false,        
         defaultValue:'photo'
-
     },
     taxNumberPhoto:{
         type: DataTypes.STRING,
@@ -39,7 +38,8 @@ const customer = sequelize.define('customers',{
     },
     phone:{
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
     email:{
         type: DataTypes.STRING,
