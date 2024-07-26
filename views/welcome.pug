@@ -1,0 +1,61 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title Welcome to SmartRabbit
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+      }
+      .header img {
+        max-width: 150px;
+      }
+      .content {
+        line-height: 1.6;
+      }
+      .footer {
+        text-align: center;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+        margin-top: 20px;
+        font-size: 0.9em;
+        color: #666;
+      }
+  body
+    .container
+      .header
+        img(src="https://example.com/logo.png", alt="SmartRabbit Logo")
+      .content
+        h1 Welcome to SmartRabbit!
+        p Hello #{name},
+        p
+          | Thank you for choosing SmartRabbit for your logistics needs. We are thrilled to have you on board and look forward to helping you streamline your logistics operations.
+        p
+          | If you have any questions or need assistance, please do not hesitate to contact our support team at
+          a(href="mailto:support@smartrabbit.com") support@smartrabbit.com.
+        p Best regards,
+        p The SmartRabbit Team
+      .footer
+        p &copy; 2024 SmartRabbit. All rights reserved.
+        p
+          a(href="https://www.smartrabbit.com") Visit our website

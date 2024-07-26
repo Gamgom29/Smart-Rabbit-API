@@ -1,69 +1,77 @@
-const { DataTypes} = require('sequelize');
-
-const sequelize = require('../utils/database');
+const mongoose = require('mongoose');
 const validator = require('validator');
-
-const customer = sequelize.define('customers',{
-    name:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    password:{
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    nationalId: {
-        type: DataTypes.BIGINT,
-        allowNull: false
-    },
-    nationalIdPhotoFace:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        defaultValue:'photo'
-        
-    },
-    nationalIdPhotoBack:{
-        type: DataTypes.STRING,
-        allowNull: false,        
-        defaultValue:'photo'
-    },
-    taxNumberPhoto:{
-        type: DataTypes.STRING,
-        allowNull: false, 
-        defaultValue:'photo'
-    },
-    taxNumber:{
-        type: DataTypes.BIGINT,
-        allowNull: false
-    },
-    phone:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true
+const crypto = require('crypto');
+const customer = new mongoose.Schema({
+    name : {
+        type: String,
+        required: true
     },
     email:{
-        type: DataTypes.STRING,
+        type: String,
+        required: true,
         unique: true,
-        allowNull: false,
-        validate:{
-            isEmail:{msg:'Invalid email address'}
-        }
+        validate: [validator.isEmail, 'Invalid email address']
+    },
+    phone:{
+        type: String,
+        required: true,
+        unique: true
+    },
+    password:{
+        type: String,
+        required: true,
+    },
+    nationalId:{
+        type: Number,
+        required: true,
+        unique: true
+    },
+    nationalIdPhotoFace:{
+        type: String,
+        required: true,
+        default: 'photo'
+    },
+    nationalIdPhotoBack:{
+        type: String,
+        required: true,
+        default: 'photo'
+    },
+    taxNumberPhoto:{
+        type: String,
+        required: true,
+        default: 'photo'
+    },
+    taxNumber:{
+        type: Number,
+        required: true,
+        unique: true
     },
     city:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     neighbourhood:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
+    },
+    street:{
+        type: String,
+        required: true
     },
     productType:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
-    Token:{
-        type: DataTypes.STRING,
-    }
-
+    token:{
+        type: String
+    },
+    OTP:String,
+    OTPExp:Date
 });
-module.exports = customer;
+customer.methods.generateOTP = function(){
+    const Otp = crypto.randomInt(100000,999999).toString();
+    this.OTP = Otp;
+    this.OTPExp = Date.now() + 10 * 60 * 1000; // 10 minutes
+    return Otp;
+}
+module.exports = mongoose.model('Customer', customer);

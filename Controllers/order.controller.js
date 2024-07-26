@@ -11,7 +11,7 @@ const { ValidationError } = require('sequelize');
 const getOrder = asyncWrapper(
     async (req,res,next)=>{
     console.log(req.params.id);
-    const order = await Order.findByPk(req.params.id);
+    const order = Order.findOne({_id: req.params.id});
     if(!order){
         const error = appError.create('Order not found' , 404 ,httpTextStatus.FAIL );
         return next(error);
@@ -19,17 +19,11 @@ const getOrder = asyncWrapper(
     return res.status(200).json({status: httpTextStatus.SUCCESS, data:order});
     }
 );
-const orderSchema = joi.object({
-    pickDate : joi.date().required(),
-}).unknown(true)
+
 const CreateOrder = asyncWrapper(
     async (req,res,next)=>{
-        const validation = orderSchema.validate(req.body);
-        if(validation.error){
-            return next(appError.create(validation.error.details[0].message, 400, httpTextStatus.FAIL));
-        }
             const id = req.body.userId;
-            const customer = await Customer.findByPk(id);
+            const customer = await Customer.findById(id);
             if(!customer){
                 return next(appError.create('User Not Found' , 404 , httpTextStatus.FAIL));
             }

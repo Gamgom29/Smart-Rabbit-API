@@ -1,56 +1,46 @@
-const { DataTypes} = require('sequelize');
-
-const sequelize = require('../utils/database');
+const mongoose = require('mongoose');
 const validator = require('validator');
-
-const order = sequelize.define('orders',{
+const order = mongoose.Schema({
     userId:{
-        type: DataTypes.BIGINT,
-        allowNull: false,
-        references: {
-            model: 'customers',
-            key: 'id'
-        }
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer',
+        required: true
     },
     pickDate:{
-        type: DataTypes.DATE,
-        allowNull: false
+        type: Date,
+        required: true
     },
     recieverName:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     recieverCity:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     recieverNeighborhood:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     recieverStreet:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     recieverPhone:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true,
     },
     productCategory:{
-        type: DataTypes.STRING,
-        allowNull: false
+        type: String,
+        required: true
     },
     quantity:{
-        type: DataTypes.INTEGER,
-        allowNull: false
+        type: Number,
+        required: true
     },
     notes:{
-        type: DataTypes.TEXT,
-        allowNull: true
+        type: String,
+        required: false
     }
-
-});
-
-
-
-module.exports = order;
+})
+module.exports = mongoose.model('Order',order);

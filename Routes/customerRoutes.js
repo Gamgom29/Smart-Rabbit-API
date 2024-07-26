@@ -24,5 +24,7 @@ router.route('/signup')
     ,customerController.register);
 
 router.post('/login' , customerController.login);
-
+router.post('/forgetpassword' , customerController.forgetpassword)
+router.post('/CheckOTP', customerController.checkOTP);
+router.patch('/resetpassword', customerController.resetPassword);
 module.exports = router;
