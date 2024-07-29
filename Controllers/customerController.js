@@ -77,7 +77,7 @@ const login =asyncWrapper(
 const forgetpassword = asyncWrapper(
     async (req, res, next) => {
         const customerEmail = req.body.email;
-        console.log(customerEmail);
+        //console.log(customerEmail);
         const customer = await Customer.findOne({email:customerEmail});
         if(!customer){
             return next(appError.create('User Not Found', 404, httpTextStatus.FAIL));
@@ -86,32 +86,40 @@ const forgetpassword = asyncWrapper(
         const OTP =  customer.generateOTP();
         await customer.save({validateBeforeSave:false});
         const email = new Email(customer , OTP);
-        console.log(OTP);
+        const otpToken = jwt.sign({email: customer.email  , phone: customer.phone} , process.env.JWT_SECRET,{expiresIn:"10m"});
+        //console.log(OTP);
         email.sendResetPassword(OTP);
         // send email with new password
         //...
-        res.status(200).json({status:httpTextStatus.SUCCESS, message: 'Reset Code has been sent to your email.'});
+        res.status(200).json({status:httpTextStatus.SUCCESS, message: 'Reset Code has been sent to your email.' , otpToken});
     }
 );
 const checkOTP = asyncWrapper(
     async(req,res,next)=>{
+        const token = req.headers['otp'].split(' ')[1];
+        const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
+        console.log(decodeToken.email);
         const customer = await Customer.findOne({
+            email:decodeToken.email,
             OTP: req.body.OTP,
             OTPExp:{$gte :Date.now()},
         });
         if(!customer){
             return next(appError.create('Invalid OTP or Expired', 401, httpTextStatus.FAIL));
         }
-        customer.OTP = undefined;
+        customer.OTP = undefined; 
         customer.OTPExp = undefined;
+        const resetToken = jwt.sign({email:customer.email , phone:customer.phone} ,process.env.JWT_SECRET , {expiresIn:'10m'} );
         await customer.save({validateBeforeSave:false});
-        res.status(200).json({status:httpTextStatus.SUCCESS , message : 'Valid OTP Code Go Next To Change Password'});
+        res.status(200).json({status:httpTextStatus.SUCCESS , message : 'Valid OTP Code Go To Change Password' , resetToken} );
     }
 )
 const resetPassword = asyncWrapper(
     async(req , res , next)=>{
+        const token = req.headers['resetpassword'].split(' ')[1];
+        const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
         const customer = await Customer.findOne({
-            email:req.body.email
+            email:decodeToken.email
         });
         if(!customer){
             return next(appError.create('User Not Found', 404, httpTextStatus.FAIL));
@@ -122,7 +130,8 @@ const resetPassword = asyncWrapper(
         }else if(!PassRegx.test(password)){
             return next(appError.create('Password must be Minimum eight characters, at least one letter and one number', 400, httpTextStatus.FAIL));
         }
-        Customer.updateOne({email:req.body.email} , {$set:req.body.password});
+        const hashedPassword = await bcrypt.hash(password, 10);
+        Customer.updateOne({email:decodeToken.email} , {$set:{password:hashedPassword}});
         res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Password Changed Successfully'});
     }
 )
