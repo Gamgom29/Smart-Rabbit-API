@@ -131,7 +131,9 @@ const resetPassword = asyncWrapper(
             return next(appError.create('Password must be Minimum eight characters, at least one letter and one number', 400, httpTextStatus.FAIL));
         }
         const hashedPassword = await bcrypt.hash(password, 10);
+        customer.token = undefined;
         Customer.updateOne({email:decodeToken.email} , {$set:{password:hashedPassword}});
+        await customer.save();
         res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Password Changed Successfully'});
     }
 )

@@ -6,7 +6,7 @@ const verifyToekn = require('../Middlewares/verifyToken.js');
 
 router.post('/placeorder' , verifyToekn , orderController.CreateOrder);
 
-router.route('/:id')
-            .get(verifyToekn , orderController.getOrder);
+router.route('/')
+            .get(/* verifyToekn , */ orderController.getOrder);
 
 module.exports = router;

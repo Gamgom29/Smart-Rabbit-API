@@ -7,6 +7,8 @@ const appError = require('../utils/appError.js');
 const httpTextStatus = require('../utils/httpsStatusText.js');
 const joi = require('joi');
 const { ValidationError } = require('sequelize');
+const googleKey = process.env.GOOGLE_API_KEY;
+
 
 const getOrder = asyncWrapper(
     async (req,res,next)=>{
@@ -17,7 +19,9 @@ const getOrder = asyncWrapper(
         return next(error);
     }
     return res.status(200).json({status: httpTextStatus.SUCCESS, data:order});
-    }
+    
+}
+
 );
 
 const CreateOrder = asyncWrapper(
