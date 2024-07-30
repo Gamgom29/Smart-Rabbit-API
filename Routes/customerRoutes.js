@@ -17,7 +17,7 @@ const fileFilter = (req,file,cb)=>{
         return cb(null, true);
     }else return cb(appError.create('unSupported File Type' , 500 ,'fail'), false);
 }
-const upload = multer({ storage: diskStorage ,fileFilter:fileFilter })
+const upload = multer({ storage: diskStorage /* ,fileFilter:fileFilter  */})
 
 router.route('/signup')
     .post(upload.fields([{name:'nationalIdPhotoFace'} , {name:'nationalIdPhotoBack'},{name:'taxNumberPhoto'}])

@@ -7,7 +7,7 @@ const db = process.env.DATABASE.replace(
     process.env.DB_PASS
 );
 mongoose
-    .connect(db).then(()=>{
+    .connect(db,).then(()=>{
     console.log("Database Is Connected ✅");
 })
 

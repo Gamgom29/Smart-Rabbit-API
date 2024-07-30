@@ -6,29 +6,17 @@ const order = mongoose.Schema({
         ref: 'Customer',
         required: true
     },
-    pickDate:{
+    pickupAddress:{
+        type: String,
+        required: true
+    },
+    pickupDate:{
         type: Date,
         required: true
     },
-    recieverName:{
+    storePhoneNumber:{
         type: String,
         required: true
-    },
-    recieverCity:{
-        type: String,
-        required: true
-    },
-    recieverNeighborhood:{
-        type: String,
-        required: true
-    },
-    recieverStreet:{
-        type: String,
-        required: true
-    },
-    recieverPhone:{
-        type: String,
-        required: true,
     },
     productCategory:{
         type: String,
@@ -38,9 +26,39 @@ const order = mongoose.Schema({
         type: Number,
         required: true
     },
+    receiverName:{
+        type: String,
+        required: true
+    },
+    receiverPhoneNumber:{
+        type: String,
+        required: true
+    },
+    receiverAddress:{
+        type: String,
+        required: true
+    },
+    orderPrice:{
+        type: Number,
+        required: true
+    },
+    paymentStatus:{
+        type: String,
+        required: true
+    },
+    receiveDate:{
+        type: Date,
+        required: true
+    },
     notes:{
         type: String,
-        required: false
+        required: false,
+        default: ''
+    },
+    orderStatus:{
+        type: String,
+        required: true,
+        enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled']
     }
 } , {timestamps: true });
 module.exports = mongoose.model('Order',order);
