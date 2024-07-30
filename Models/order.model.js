@@ -58,7 +58,8 @@ const order = mongoose.Schema({
     orderStatus:{
         type: String,
         required: true,
-        enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled']
+        enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled' , ],
+        default: 'Pending',
     }
 } , {timestamps: true });
 module.exports = mongoose.model('Order',order);
