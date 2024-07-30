@@ -44,7 +44,9 @@ const order = mongoose.Schema({
     },
     paymentStatus:{
         type: String,
-        required: true
+        required: true,
+        enum:['Cash' , 'Visa'],
+        default: 'Cash'
     },
     receiveDate:{
         type: Date,
@@ -57,7 +59,7 @@ const order = mongoose.Schema({
     },
     orderStatus:{
         type: String,
-        required: true,
+        required: false,
         enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled' , ],
         default: 'Pending',
     }
