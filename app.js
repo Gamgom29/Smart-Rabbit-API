@@ -15,6 +15,9 @@ app.use(morgan('dev'));
 app.get('/', (req, res) => {
     res.json({message:'API is running...'});
 })
+app.get('/paymetnSuccess' , (req, res) => {
+    res.json({message:'Payment Successful'});
+})
 app.use('/api/uploads',express.static(path.join(__dirname , 'uploads')));
 app.use('/api/customers',require('./Routes/customerRoutes'));
 app.use('/api/orders' , require('./Routes/orderRoutes'));
