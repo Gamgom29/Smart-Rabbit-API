@@ -17,13 +17,13 @@ const checkoutSession = asyncWrapper(
         const customer = await Customer.findById(order.userId);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            success_url:'http://localhost:8000/paymetnSuccess',
-            cancel_url: 'http://localhost:8000/',
+            success_url:'https://smart-rabbit-api.onrender.com/paymetnSuccess',
+            cancel_url: 'https://smart-rabbit-api.onrender.com/',
             line_items: [
             {
                 price_data: {
                     currency: 'EGP',
-                    unit_amount: order.orderPrice * 100,
+                    unit_amount: order.orderPrice * 10,
                     product_data: {
                         name: customer.name,
                         description:order.receiverAddress
