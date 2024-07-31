@@ -10,6 +10,6 @@ router.post('/createorder' , verifyToekn , orderController.CreateOrder);
 router.route('/:id' )
             .get(verifyToekn,orderController.getOrder)
             .delete(verifyToekn , orderController.deleteOrder)
-router.get('/userorders/:id',verifyToekn , orderController.getAllOrders);
+router.get('/user-orders/:id',verifyToekn , orderController.getAllOrders);
 
 module.exports = router;
