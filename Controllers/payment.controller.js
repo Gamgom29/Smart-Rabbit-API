@@ -17,20 +17,22 @@ const checkoutSession = asyncWrapper(
         const customer = await Customer.findById(order.userId);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            success_url:'http://localhost:8000/paymetnSuccess/',
+            success_url:'http://localhost:8000/paymetnSuccess',
             cancel_url: 'http://localhost:8000/',
             line_items: [
             {
                 price_data: {
-                    currency: 'usd',
-                    unit_amount: order.orderPrice,
+                    currency: 'EGP',
+                    unit_amount: order.orderPrice * 100,
                     product_data: {
                         name: customer.name,
+                        description:order.receiverAddress
                     },
                     },
                     quantity: order.quantity,
                 }],
-            mode:'payment'
+            mode:'payment',
+            client_reference_id:order._id.toString()
         })
         res.status(200).json({status: httpsStatusText.SUCCESS, data: { session} });
         // Generate checkout session with Stripe
