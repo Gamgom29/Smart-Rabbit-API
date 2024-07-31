@@ -21,7 +21,7 @@ app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, r
     let event = req.body;
 
     try {
-        event = stripe.webhooks.constructEvent(Buffer.from(JSON.stringify(req.body), 'base64').toString('utf8'), sig, endpointSecret);
+        event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
         console.log(`⚠️  Webhook signature verification failed.`, err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
