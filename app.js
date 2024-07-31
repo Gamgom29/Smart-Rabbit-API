@@ -11,7 +11,7 @@ const httpsStatusText = require('./utils/httpsStatusText');
 const app = express();
 const stripeKey = process.env.STRIPE_KEY;
 const stripe = require('stripe')(stripeKey);
-const endpointSecret = 'we_1Pih9fGgofeznP47YYg1SWTs';
+const endpointSecret = process.env.WEBHOOK_SECRET;;
 app.use(cors());
 app.use(express.urlencoded({ extended: true  }));
 app.use(morgan('dev'));
