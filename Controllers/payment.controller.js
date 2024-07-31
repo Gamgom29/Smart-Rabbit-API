@@ -1,13 +1,14 @@
-const asyncWrapper = require("../Middlewares/asyncWrapper");
+const asyncWrapper = require("../Middlewares/asyncWrapper.js");
 const Order = require('../Models/order.model.js');
 const Customer = require('../Models/customer.model.js');
 const appError = require("../utils/appError");
-const stripe = require('stripe');
-const httpsStatusText = require("../utils/httpsStatusText.js");
 const stripeKey = process.env.STRIPE_KEY;
-exports.checkoutSession = asyncWrapper(
+const stripe = require('stripe')(stripeKey);
+const httpsStatusText = require("../utils/httpsStatusText.js");
+
+const checkoutSession = asyncWrapper(
     async (req, res, next) => {
-        const order = await Order.find(req.params.orderId);
+        const order = await Order.findById(req.params.orderId);
         if(!order){
             const error = appError.create('Order not found', 404, httpTextStatus.FAIL);
             return next(error);
@@ -16,18 +17,25 @@ exports.checkoutSession = asyncWrapper(
         const customer = await Customer.findById(order.userId);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            SUCCESS_url:'http://localhost:8000/api/',
+            success_url:'http://localhost:8000/api/',
             cancel_url: 'http://localhost:8000/api/',
             line_items: [
             {
-                name:customer.name,
-                amount:order.orderPrice * 100,
-                currency: 'usd',
-                quantity: order.quantity,
-            }
-            ]
+                price_data: {
+                    currency: 'usd',
+                    unit_amount: order.orderPrice,
+                    product_data: {
+                        name: customer.name,
+                    },
+                    },
+                    quantity: order.quantity,
+                }],
+            mode:'payment'
         })
         res.status(200).json({status: httpsStatusText.SUCCESS, data: { session} });
         // Generate checkout session with Stripe
     }
-)
+);
+module.exports = {
+    checkoutSession
+}

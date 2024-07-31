@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 app.use('/api/uploads',express.static(path.join(__dirname , 'uploads')));
 app.use('/api/customers',require('./Routes/customerRoutes'));
 app.use('/api/orders' , require('./Routes/orderRoutes'));
-app.use('api/payment' , require('./Routes/paymentRoutes'));
+app.use('/api/payment' , require('./Routes/paymentRoutes'));
 app.use(errorHandler);
 app.all('*' , (req, res,next)=>{
     res.json({status:httpsStatusText.ERROR , message:'this resource is not available.'});
