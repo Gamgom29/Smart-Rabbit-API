@@ -31,6 +31,7 @@
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.3",
     "sequelize": "^6.37.3",
+    "stripe": "^16.5.0",
     "validator": "^13.12.0",
     "validatorjs": "^3.22.1"
   }
