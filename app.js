@@ -13,20 +13,18 @@ const stripeKey = process.env.STRIPE_KEY;
 const stripe = require('stripe')(stripeKey);
 const endpointSecret = process.env.WEBHOOK_SECRET;;
 app.use(cors());
-app.use(express.urlencoded({ extended: true  }));
 app.use(morgan('dev'));
-app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, res) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
     const sig = req.headers['stripe-signature'];
-
-    let event = req.body;
-
+    
+    let event;
+    
     try {
         event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
     } catch (err) {
         console.log(`⚠️  Webhook signature verification failed.`, err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-
     // Handle the event
     switch (event.type) {
         case 'checkout.session.completed':
@@ -39,15 +37,16 @@ app.post('/webhook', bodyParser.raw({ type: 'application/json' }), async (req, r
                 await order.save();
             }
             break;
-        // ... handle other event types
-        default:
-            console.log(`Unhandled event type ${event.type}`);
-    }
-
-    // Return a response to acknowledge receipt of the event
-    res.json({ received: true });
+            // ... handle other event types
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+            }
+            
+            // Return a response to acknowledge receipt of the event
+            res.json({ received: true });
 });
 app.use(express.json());
+app.use(express.urlencoded({ extended: true  }));
 app.get('/', (req, res) => {
     res.json({message:'API is running...'});
 })
