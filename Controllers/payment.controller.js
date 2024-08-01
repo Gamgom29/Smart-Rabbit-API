@@ -38,6 +38,29 @@ const checkoutSession = asyncWrapper(
         // Generate checkout session with Stripe
     }
 );
+
+const webhook = asyncWrapper(async(req,res,next)=>{
+    const signature = req.headers['stripe-signature'];
+    let event;
+    try {
+        event = stripe.webhooks.constructEvent(req.body, signature, process.env.WEBHOOK_SECRET);
+        if(event.type=='checkout.session.completed'){
+            const session = event.data.object;
+            // Find the order by session ID or some other identifier you stored during session creation
+            const orderId = session.client_reference_id; // Assuming you set this when creating the session
+            const order = await Order.findById(orderId);
+            if (order) {
+                order.paymentStatus = 'Paid';
+                await order.save();
+            }
+        }
+    } catch (err) {
+        console.error('Error with webhook: ', err.message);
+        return res.status(400).send(`Error with webhook: ${err.message}`);
+    }
+    res.json({ received: true });
+})
 module.exports = {
-    checkoutSession
+    checkoutSession,
+    webhook
 }
