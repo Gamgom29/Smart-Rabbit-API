@@ -17,8 +17,8 @@ const checkoutSession = asyncWrapper(
         const customer = await Customer.findById(order.userId);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            success_url:'https://smart-rabbit-api.onrender.com/paymetnSuccess',
-            cancel_url: 'https://smart-rabbit-api.onrender.com/',
+            success_url:'https://smart-rabbit-api.onrender.com/payment/payment-success',
+            cancel_url: 'https://smart-rabbit-api.onrender.com/payment/payment-cancelled',
             line_items: [
             {
                 price_data: {
@@ -39,6 +39,16 @@ const checkoutSession = asyncWrapper(
     }
 );
 
+const paymentSuccesss = asyncWrapper(
+    async (req,res,next) => {
+        res.status(200).json({status: httpsStatusText.SUCCESS, message: 'Payment successful'});
+    }
+)
+const paymentCancelled = asyncWrapper(
+    async (req,res,next) => {
+        res.status(400).json({status: httpsStatusText.FAIL, message: 'Payment Cancelled'});
+    }
+)
 const webhook = asyncWrapper(async(req,res,next)=>{
     const signature = req.headers['stripe-signature'];
     let event;
@@ -62,5 +72,7 @@ const webhook = asyncWrapper(async(req,res,next)=>{
 })
 module.exports = {
     checkoutSession,
-    webhook
+    webhook,
+    paymentCancelled,
+    paymentSuccesss
 }
