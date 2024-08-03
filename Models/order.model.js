@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const order = mongoose.Schema({
-    userId:{
+    customerId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
         required: true
@@ -42,26 +42,36 @@ const order = mongoose.Schema({
         type: Number,
         required: true
     },
+    receiveDate:{
+        type: Date,
+        required: true
+    },
+    paymentMethod:{
+        type: String,
+        required: true,
+        enum:['Cash', 'Visa'],
+        default: 'Cash'
+    },
+    cashHandlingType:{
+        type: String,
+        enum: ['total', 'delivery'],
+    },
     paymentStatus:{
         type: String,
         required: false,
         enum:['Pending' , 'Paid' , 'Cancelled'],
         default: 'Pending'
     },
-    receiveDate:{
-        type: Date,
-        required: true
+    orderStatus:{
+        type: String,
+        required: false,
+        enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled' , ],
+        default: 'Pending',
     },
     notes:{
         type: String,
         required: false,
         default: ''
     },
-    orderStatus:{
-        type: String,
-        required: false,
-        enum:['Pending' , 'Shipped' , 'Complete' , 'Cancelled' , ],
-        default: 'Pending',
-    }
 } , {timestamps: true });
 module.exports = mongoose.model('Order',order);
