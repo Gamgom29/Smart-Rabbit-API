@@ -14,7 +14,7 @@ const checkoutSession = asyncWrapper(
             return next(error);
         }
         console.log(req.params.orderId);
-        const customer = await Customer.findById(order.userId);
+        const customer = await Customer.findById(order.customerId);
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             success_url:'https://smart-rabbit-api.onrender.com/payment/payment-success',

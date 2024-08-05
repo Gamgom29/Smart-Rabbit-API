@@ -3,6 +3,7 @@ const router = express.Router();
 const customerController = require('../Controllers/customerController.js');
 const multer  = require('multer');
 const appError = require('../utils/appError.js');
+const verifyToken = require('../Middlewares/verifyToken.js');
 const diskStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads')
@@ -27,4 +28,5 @@ router.post('/login' , customerController.login);
 router.post('/forgetpassword' , customerController.forgetpassword)
 router.post('/CheckOTP', customerController.checkOTP);
 router.patch('/resetpassword', customerController.resetPassword);
+
 module.exports = router;
