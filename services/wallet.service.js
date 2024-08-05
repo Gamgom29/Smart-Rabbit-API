@@ -15,15 +15,14 @@ const addBalanceToWallet = async (walletId , amount) =>{
     }
 }
 
-const takeFromWallet = async (req) =>{
+const takeFromWallet = async (walletId , amount) =>{
     try{
-        const customerId = req.body.customerId;
-        const wallet = await Wallet.find({customerId: customerId});
+        const wallet = await Wallet.findById(walletId);
         let currentBalance = wallet.balance;
-        if(currentBalance < req.body.amount){
+        if(currentBalance < amount){
             throw new Error('Insufficient Balance');
         }
-        currentBalance -= req.body.amount;
+        currentBalance -= amount;
         wallet.balance = currentBalance;
         await wallet.save();
     }catch(err){

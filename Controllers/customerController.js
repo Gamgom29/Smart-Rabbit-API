@@ -144,14 +144,47 @@ const resetPassword = asyncWrapper(
         customer.token = undefined;
         Customer.updateOne({email:decodeToken.email} , {$set:{password:hashedPassword}});
         await customer.save();
-        res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Password Changed Successfully'});
+        res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Password Changed Successfully' , data:null});
+    }
+);
+const deleteCustomer = asyncWrapper(
+    async(req,res,next)=>{
+        const id = req.params.id;
+        const wallet = await Wallet.findOneAndDelete({customerId : id});
+        if(!wallet){
+            const error = appError.create('User not found', 404, httpTextStatus.FAIL);
+            return next(error);
+        }
+        const customer = await Customer.findByIdAndDelete(id);
+        if(!customer){
+            const error = appError.create('User not found', 404, httpTextStatus.FAIL);
+            return next(error);
+        }
+        res.status(200).json({status:httpTextStatus.SUCCESS, message : 'User deleted successfully' , data:null});
     }
 );
 
+const getProfile = asyncWrapper(
+    async(req,res,next)=>{
+        const id = req.params.id;
+        const customer = await Customer.findById(id);
+        if(!customer){
+            const error = appError.create('User not found', 404, httpTextStatus.FAIL);
+            return next(error);
+        }
+        res.status(200).json({status:httpTextStatus.SUCCESS, data:{customer:{
+            name: customer.name,
+            email: customer.email,
+            phone: customer.phone,
+        }}});
+    }
+)
 module.exports = {
     register,
     login,
     forgetpassword,
     checkOTP,
     resetPassword,
+    deleteCustomer,
+    getProfile
 };

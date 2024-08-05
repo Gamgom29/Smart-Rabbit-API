@@ -28,5 +28,7 @@ router.post('/login' , customerController.login);
 router.post('/forgetpassword' , customerController.forgetpassword)
 router.post('/CheckOTP', customerController.checkOTP);
 router.patch('/resetpassword', customerController.resetPassword);
-
+router.route('/:id')
+            .get(verifyToken , customerController.getProfile)
+            .delete(verifyToken , customerController.deleteCustomer);
 module.exports = router;
