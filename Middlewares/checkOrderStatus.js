@@ -7,6 +7,8 @@ const CheckPaymentStatus =async  (req , res , next) => {
         return res.status(401).json({status: "fail" , message :"This Order is Already Completed"});
     else if(order.orderStatus === 'Cancelled')
         return res.status(401).json({status: "fail" , message :"This Order is Already Cancelled"});
+    else if(order.paymentStatus =='Paid') 
+        return res.status(401).json({status: "fail" , message :"This Order is Already Paid"});
     next();
 }
 module.exports = CheckPaymentStatus;
