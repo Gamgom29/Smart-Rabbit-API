@@ -1,9 +1,12 @@
 const Customer = require('../Models/customer.model.js');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const asyncWrapper = require('../Middlewares/asyncWrapper');
 const appError = require('../utils/appError.js');
 const httpTextStatus = require('../utils/httpsStatusText.js');
+const Wallet = require('../Models/wallet.model.js');
 const PassRegx =new RegExp(process.env.PASS_REGX);
 const Email = require('../utils/Email.js')
 const register = asyncWrapper(
@@ -37,8 +40,15 @@ const register = asyncWrapper(
                     taxNumberPhoto:files.taxNumberPhoto[0].filename
                 });
                 await customer.save();
+
                 const email = new Email(customer,'');
                 await email.sendWelcome();
+                const wallet = await new Wallet({
+                    customerId: customer._id,
+                    balance: 0
+                }); 
+                wallet.save();
+
                 return res.status(200).json({status:httpTextStatus.SUCCESS , data:{customer}});
             }
         }
@@ -136,12 +146,12 @@ const resetPassword = asyncWrapper(
         await customer.save();
         res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Password Changed Successfully'});
     }
-)
+);
 
 module.exports = {
     register,
     login,
     forgetpassword,
     checkOTP,
-    resetPassword
+    resetPassword,
 };

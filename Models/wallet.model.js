@@ -1,9 +1,10 @@
 const mongoose = require('mongoose');
-const walletSchema =new mongoose.createSchema({
+const walletSchema = mongoose.Schema({
     customerId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
-        required: true
+        required: true,
+        unique: true
     },
     balance:{
         type: Number,
