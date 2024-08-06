@@ -6,11 +6,12 @@ const appError = require('../utils/appError.js');
 const httpTextStatus = require('../utils/httpsStatusText.js');
 const Wallet = require('../Models/wallet.model.js');
 const PassRegx =new RegExp(process.env.PASS_REGX);
-const Email = require('../utils/Email.js')
+const Email = require('../utils/Email.js');
+const generateToken = require('../utils/generateToken.js');
+
 const register = asyncWrapper(
     async (req, res, next) => {
         const files = req.files;
-        //console.log(files);
         const data = req.body;
         const oldCustomer = await Customer.findOne({phone: data.phone});
         if(oldCustomer){
@@ -22,7 +23,6 @@ const register = asyncWrapper(
         }else if(data.password != data.passwordConfirm){
             return next(appError.create('Password confirmation does not match' , 400 , httpTextStatus.FAIL));
         }
-        const token = jwt.sign({email: data.email  , phone: data.phone} , process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE})
         const hashedPassword = await bcrypt.hash(data.password, 10);
         if(files){
             if(!files['nationalIdPhotoFace']  ||!files['nationalIdPhotoBack'] || !files['taxNumberPhoto'] ){
@@ -32,13 +32,13 @@ const register = asyncWrapper(
                 const customer = await new Customer({
                     ...data,
                     password: hashedPassword,
-                    token,
                     nationalIdPhotoFace:files.nationalIdPhotoFace[0].filename,
                     nationalIdPhotoBack:files.nationalIdPhotoBack[0].filename,
                     taxNumberPhoto:files.taxNumberPhoto[0].filename
                 });
+                const token = generateToken({email: data.email  , phone: data.phone , id : customer._id});
+                customer.token = token;
                 await customer.save();
-
                 const email = new Email(customer,'');
                 await email.sendWelcome();
                 const wallet = await new Wallet({
@@ -46,7 +46,6 @@ const register = asyncWrapper(
                     balance: 0
                 }); 
                 wallet.save();
-
                 return res.status(200).json({status:httpTextStatus.SUCCESS , data:{customer}});
             }
         }
@@ -66,15 +65,15 @@ const login =asyncWrapper(
         if(!isMatch){
             return next(appError.create('Invalid Email Or Password', 401, httpTextStatus.FAIL));
         }
-        const token = jwt.sign({email: customer.email  , phone: customer.phone} , process.env.JWT_SECRET,{expiresIn:process.env.JWT_EXPIRE})
-        customer.Token = token;
+        const token = generateToken({email: customer.email  , phone: customer.phone , id : customer._id});
+        customer.token = token;
         await customer.save();
         res.status(200).json({status:httpTextStatus.SUCCESS, data:{customer:{
             _id:customer._id,
             name: customer.name,
             email: customer.email,
             phone: customer.phone,
-            Token: token,
+            token: token,
             createdAt:customer.createdAt,
             updatedAt:customer.updatedAt,
         }}});
