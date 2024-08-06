@@ -7,7 +7,7 @@ const path = require('path');
 const morgan = require('morgan');
 const cors = require('cors');
 dotenv.config ({path:'config.env'});
-
+app.use(express.json({verify: (req,res,buf) => { req.rawBody = buf }}));
 const app = express();
 app.post('/webhook', express.raw({ type: 'application/json' }) , paymentController.webhook);
 
@@ -15,7 +15,6 @@ if(process.env.NODE_ENV !== 'production'){
     app.use(morgan('dev'));
 }
 app.use(cors());
-app.use(express.json());
 app.use(express.urlencoded({ extended: true  }));
 
 app.get('/', (req, res) => {

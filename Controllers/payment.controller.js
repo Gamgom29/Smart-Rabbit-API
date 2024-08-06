@@ -55,7 +55,7 @@ const webhook = asyncWrapper(async(req,res,next)=>{
     const signature = req.headers['stripe-signature'];
     let event;
     try {
-        event = stripe.webhooks.constructEvent(req.body, signature, process.env.WEBHOOK_SECRET);
+        event = stripe.webhooks.constructEvent(req.rawBody, signature, process.env.WEBHOOK_SECRET);
         if(event.type=='checkout.session.completed'){
             const session = event.data.object;
             // Find the order by session ID or some other identifier you stored during session creation
