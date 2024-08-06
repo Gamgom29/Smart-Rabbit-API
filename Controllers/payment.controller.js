@@ -24,7 +24,7 @@ const checkoutSession = asyncWrapper(
             line_items: [
             {
                 price_data: {
-                    currency: 'EGP',
+                    currency: 'SAR',
                     unit_amount: order.orderPrice * 10,
                     product_data: {
                         name: customer.name,
