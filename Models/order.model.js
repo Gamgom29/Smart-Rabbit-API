@@ -42,6 +42,10 @@ const order = mongoose.Schema({
         type: Number,
         required: true
     },
+    shippingPrice:{
+        type: Number,
+        default: 0
+    },
     receiveDate:{
         type: Date,
         required: true
@@ -49,8 +53,7 @@ const order = mongoose.Schema({
     paymentMethod:{
         type: String,
         required: true,
-        enum:['Cash', 'Visa'],
-        default: 'Cash'
+        enum:['Cash', 'Visa' , 'Wallet'],
     },
     cashHandlingType:{
         type: String,
@@ -74,4 +77,16 @@ const order = mongoose.Schema({
         default: ''
     },
 } , {timestamps: true });
+
+order.virtual('total').get(function(){
+    return this.orderPrice + (this.shippingPrice || 0);
+});
+
+
+order.set('toJSON', {
+    virtuals: true
+});
+order.set('toObject', {
+    virtuals: true
+});
 module.exports = mongoose.model('Order',order);
