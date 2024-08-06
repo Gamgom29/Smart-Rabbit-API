@@ -9,8 +9,8 @@ router.post('/createOrder-payWithWallet' , verifyToekn , orderController.createO
 router.route('/:id' )
             .get(verifyToekn,orderController.getOrder)
             .delete(verifyToekn , orderController.deleteOrder)
-router.get('/user-orders/:id',verifyToekn , orderController.getAllOrders);
+router.get('/userOrders/:id',verifyToekn , orderController.getAllOrders);
 
-router.patch('/order-status/:id' , checkOrderStatus,verifyToekn , orderController.changeOrderState);
+router.patch('/orderStatus/:id' , checkOrderStatus,verifyToekn , orderController.changeOrderState);
 
 module.exports = router;
