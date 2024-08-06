@@ -1,19 +1,20 @@
 const Company = require('../Models/company.model');
 
-class companyservice{
+class company_service{
     constructor(){
         this.company = null;
     }
 
     async initialize(){
         const companies = await Company.find();
+        //console.log(companies);
         if(companies.length > 1){
             throw new Error('Multiple companies found');
         }
-        if(companies.length == 1) this.company = companies[0];
+        if(companies.length === 1) this.company = companies[0];
         else {
             const newCompany = new Company({
-                shippingPrice:0,
+                shippingPrice:15,
                 treasury:0
             });
             this.company = await newCompany.save();
@@ -21,7 +22,9 @@ class companyservice{
     }
 
     getInstance(){
-        if(!this.company) throw new Error('No company Found')
+        if(!this.company){
+            throw new Error('No company Found')
+        }
         return this.company;
     }
     async updateCompany(data){
@@ -31,6 +34,6 @@ class companyservice{
     }
 }
 
-const companyService = new companyservice();
+const companyService = new company_service();
 
 module.exports = companyService;
