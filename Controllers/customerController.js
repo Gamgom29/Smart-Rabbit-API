@@ -1,6 +1,4 @@
 const Customer = require('../Models/customer.model.js');
-const mongoose = require('mongoose');
-const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const asyncWrapper = require('../Middlewares/asyncWrapper');
@@ -84,7 +82,7 @@ const login =asyncWrapper(
 
 );
 
-const forgetpassword = asyncWrapper(
+const forgetPassword = asyncWrapper(
     async (req, res, next) => {
         const customerEmail = req.body.email;
         //console.log(customerEmail);
@@ -182,7 +180,7 @@ const getProfile = asyncWrapper(
 module.exports = {
     register,
     login,
-    forgetpassword,
+    forgetPassword,
     checkOTP,
     resetPassword,
     deleteCustomer,

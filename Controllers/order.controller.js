@@ -8,6 +8,8 @@ const httpTextStatus = require('../utils/httpsStatusText.js');
 const Transaction = require('../Models/transaction.model.js');
 const Wallet = require('../Models/wallet.model.js');
 const walletService = require('../services/wallet.service.js');
+const companyservice = require('../services/company.service.js');
+
 
 const getOrder = asyncWrapper(
     async (req,res,next)=>{
@@ -34,6 +36,8 @@ const CreateOrder = asyncWrapper(
                 const error = appError.create('Failed to create Order' , 500 , httpTextStatus.FAIL );
                 return next(error);
             }
+            const company = companyservice.getInstance();
+            order.shippingPrice = company.shippingPrice;
             order.save();
             return res.status(201).json({status: httpTextStatus.SUCCESS, data:{order}});
     }
@@ -126,6 +130,8 @@ const createOrderPayWithWallet = asyncWrapper(
             try{
                 await walletService.takeFromWallet(wallet._id , order.total);
                 order.paymentStatus = 'Paid';
+                const company = companyservice.getInstance();
+                order.shippingPrice = company.shippingPrice;
                 await order.save();
                 return res.status(201).json({status: httpTextStatus.SUCCESS, data:{order}});
             }catch(err){
