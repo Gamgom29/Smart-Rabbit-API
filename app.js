@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const errorHandler = require('./Middlewares/errorHandler')
-const paymentControoler = require('./Controllers/payment.controller');
+const paymentController = require('./Controllers/payment.controller');
 const httpsStatusText = require('./utils/httpsStatusText');
 const path = require('path');
 const morgan = require('morgan');
@@ -9,7 +9,7 @@ const cors = require('cors');
 dotenv.config ({path:'config.env'});
 
 const app = express();
-app.post('/webhook', express.raw({ type: 'application/json' }) , paymentControoler.webhook);
+app.post('/webhook', express.raw({ type: 'application/json' }) , paymentController.webhook);
 
 if(process.env.NODE_ENV !== 'production'){
     app.use(morgan('dev'));
