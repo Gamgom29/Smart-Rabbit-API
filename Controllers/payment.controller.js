@@ -7,6 +7,7 @@ const stripe = require('stripe')(stripeKey);
 const httpsStatusText = require("../utils/httpsStatusText.js");
 const Wallet = require('../Models/wallet.model.js');
 const walletService = require('../services/wallet.service.js');
+
 const checkoutSession = asyncWrapper(
     async (req, res, next) => {
         const order = await Order.findById(req.params.orderId);
@@ -23,7 +24,7 @@ const checkoutSession = asyncWrapper(
             line_items: [
             {
                 price_data: {
-                    currency: 'EGP',
+                    currency: 'SAR',
                     unit_amount: order.orderPrice * 10,
                     product_data: {
                         name: customer.name,
@@ -40,16 +41,16 @@ const checkoutSession = asyncWrapper(
     }
 );
 
-const paymentSuccesss = asyncWrapper(
+const paymentSuccess = asyncWrapper(
     async (req,res,next) => {
         res.status(200).json({status: httpsStatusText.SUCCESS, message: 'Payment successful'});
     }
-)
+);
 const paymentCancelled = asyncWrapper(
     async (req,res,next) => {
         res.status(400).json({status: httpsStatusText.FAIL, message: 'Payment Cancelled'});
     }
-)
+);
 const webhook = asyncWrapper(async(req,res,next)=>{
     const signature = req.headers['stripe-signature'];
     let event;
@@ -77,5 +78,5 @@ module.exports = {
     checkoutSession,
     webhook,
     paymentCancelled,
-    paymentSuccesss,
+    paymentSuccess,
 }
