@@ -5,6 +5,7 @@ const appError = require('../utils/appError.js');
 const verifyToekn = require('../Middlewares/verifyToken.js');
 const  checkOrderStatus = require('../Middlewares/checkOrderStatus.js')
 router.post('/createorder' , verifyToekn , orderController.CreateOrder);
+router.post('/createOrder-payWithWallet' , verifyToekn , orderController.createOrderPayWithWallet);
 router.route('/:id' )
             .get(verifyToekn,orderController.getOrder)
             .delete(verifyToekn , orderController.deleteOrder)

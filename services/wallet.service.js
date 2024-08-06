@@ -20,7 +20,9 @@ const takeFromWallet = async (walletId , amount) =>{
         const wallet = await Wallet.findById(walletId);
         let currentBalance = wallet.balance;
         if(currentBalance < amount){
-            throw new Error('Insufficient Balance');
+            const error =  new Error('Insufficient Balance');
+            error.statusCode = 400;
+            throw error;
         }
         currentBalance -= amount;
         wallet.balance = currentBalance;
@@ -29,6 +31,7 @@ const takeFromWallet = async (walletId , amount) =>{
         throw err;
     }
 }
+
 
 module.exports ={
     addBalanceToWallet,

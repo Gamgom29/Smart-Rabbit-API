@@ -104,12 +104,46 @@ const changeOrderState = asyncWrapper(
         order.save();
         return res.status(200).json({status: httpTextStatus.SUCCESS, data:order});
     }
-)
+);
+
+const createOrderPayWithWallet = asyncWrapper(
+    async(req,res,next)=>{
+        const id = req.body.customerId;
+            const customer = await Customer.findById(id);
+            if(!customer){
+                return next(appError.create('No User To Create Order ' , 404 , httpTextStatus.FAIL));
+            }
+            const order = await Order.create(req.body);
+            if(!order){
+                const error = appError.create('Failed to create Order' , 500 , httpTextStatus.FAIL );
+                return next(error);
+            }
+            const wallet = await Wallet.findOne({customerId: id});
+            if(!wallet){
+                const error = appError.create('No Wallet Found' , 404 , httpTextStatus.FAIL );
+                return next(error);
+            }
+            try{
+                await walletService.takeFromWallet(wallet._id , order.total);
+                order.paymentStatus = 'Paid';
+                await order.save();
+                return res.status(201).json({status: httpTextStatus.SUCCESS, data:{order}});
+            }catch(err){
+                if(err.message ==='Insufficient Balance')
+                    return res.status(400).json({ status: httpTextStatus.FAIL, message: err.message });
+                
+                const error = appError.create('Failed to pay order with wallet', 500, httpTextStatus.FAIL);
+                return next(error);
+            }
+            
+    }
+);
 
 module.exports = {
     getOrder,
     CreateOrder,
     getAllOrders,
     deleteOrder,
-    changeOrderState
+    changeOrderState,
+    createOrderPayWithWallet
 }
