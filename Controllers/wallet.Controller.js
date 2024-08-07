@@ -5,7 +5,8 @@ const httpTextStatus = require('../utils/httpsStatusText');
 const walletService = require('../services/wallet.service');
 const Order = require('../Models/order.model');
 const httpsStatusText = require('../utils/httpsStatusText');
-
+const companyService = require('../services/company.service');
+const Withdraw = require('../Models/withDraw.model');
 const getWallet = asyncWrapper(
     async(req,res,next)=>{
         const customerId = req.params.id;
@@ -28,13 +29,36 @@ const payWithWallet = asyncWrapper(
         if(!wallet){
             return res.status(404).json({status: httpsStatusText.FAIL, message: 'Wallet Not Found'});
         }
-        walletService.takeFromWallet(wallet._id , order.orderPrice);
+        walletService.takeFromWallet(wallet._id , order.shippingPrice);
         order.paymentStatus = 'Paid';
+        const company = companyService.getInstance();
+        companyService.updateCompany({
+            treasury: company.treasury + order.shippingPrice
+        });
         await order.save();
         res.status(200).json({status: httpsStatusText.SUCCESS, message: 'Payment with wallet successful'});
     }
 );
+
+const withDraw = asyncWrapper(
+    async(req,res,next)=>{
+        let token = req.headers['Authorization'] || req.headers['authorization'];
+            token = token.split(' ')[1];
+            const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
+            let customerId = decodeToken.id;
+            const wallet = await Wallet.findOne({customerId: customerId});
+            if(!wallet) 
+                return res.status(404).json({status: httpsStatusText.FAIL, message: 'User Not Found'});
+            
+            const withdraw = await Withdraw.create({
+                customerId: customerId,
+                amount: wallet.balance,
+                walletId: wallet._id
+            });
+    }
+)
 module.exports ={
     getWallet,
-    payWithWallet
+    payWithWallet,
+    withDraw
 }

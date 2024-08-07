@@ -8,6 +8,7 @@ const Wallet = require('../Models/wallet.model.js');
 const PassRegx =new RegExp(process.env.PASS_REGX);
 const Email = require('../utils/Email.js');
 const generateToken = require('../utils/generateToken.js');
+const Address = require('../Models/address.model.js');
 
 const register = asyncWrapper(
     async (req, res, next) => {
@@ -160,7 +161,21 @@ const deleteCustomer = asyncWrapper(
         res.status(200).json({status:httpTextStatus.SUCCESS, message : 'User deleted successfully' , data:null});
     }
 );
-
+const addAddress = asyncWrapper(
+    async(req,res,next)=>{
+        let token = req.headers['Authorization'] || req.headers['authorization'];
+        token = token.split(' ')[1];
+        const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
+        let id = decodeToken.id;
+        const address = await Address.create({
+            customerId: id,
+            ...req.body
+        });
+        if(!address)
+            return next( appError.create('Failed to add address', 500, httpTextStatus.FAIL));
+        res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Address added successfully' , data:address});
+    }
+)
 const getProfile = asyncWrapper(
     async(req,res,next)=>{
         const id = req.params.id;
@@ -169,13 +184,15 @@ const getProfile = asyncWrapper(
             const error = appError.create('User not found', 404, httpTextStatus.FAIL);
             return next(error);
         }
+        const customerAddresses = await Address.find({} ,{__v:false , customerId:false , _id:false},{customerId: customer._id})
         res.status(200).json({status:httpTextStatus.SUCCESS, data:{customer:{
             name: customer.name,
             email: customer.email,
             phone: customer.phone,
+            addresses: customerAddresses
         }}});
     }
-)
+);
 module.exports = {
     register,
     login,
@@ -183,5 +200,6 @@ module.exports = {
     checkOTP,
     resetPassword,
     deleteCustomer,
-    getProfile
+    getProfile,
+    addAddress,
 };

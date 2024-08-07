@@ -9,5 +9,5 @@ router.post('/createAdmin' , adminController.createAdmin);
 router.post('/login' , adminController.login);
 router.get('/getAllOrders' , verifyToken , authenticate(userRoles.ADMIN),adminController.getAllOrders);
 router.get('/getAllCustomers' , verifyToken , authenticate(userRoles.ADMIN),adminController.getAllCustomers);
-
+router.get('/getAllTransactions' , verifyToken , authenticate(userRoles.ADMIN),adminController.getAllTransactions);
 module.exports = router;

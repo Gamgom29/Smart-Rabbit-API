@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const httpTextStatus = require('../utils/httpsStatusText.js');
 const Order = require('../Models/order.model.js');
 const Customer = require('../Models/customer.model.js');
-
+const Transaction = require('../Models/transaction.model.js')
 const createAdmin = asyncWrapper(
     async (req, res, next) => {
         const email = req.body.email;
@@ -82,7 +82,6 @@ const getAllCustomers = asyncWrapper(
             token:false , nationalIdPhotoBack:false , nationalIdPhotoFace:false , taxNumberPhoto:false});
         if(!customers)
             return next(appError.create('No customers found', 404, httpTextStatus.FAIL));
-
         return res.status(200).json({status: httpTextStatus.SUCCESS, data: {
             customers:customers.slice(page*limit - limit , page*limit),
             pagination: {
@@ -93,11 +92,33 @@ const getAllCustomers = asyncWrapper(
             }
         }});
     }
+);
+
+const getAllTransactions = asyncWrapper(
+    async(req,res,next)=>{
+        const limit = req.query.limit || 10;
+        const page = req.query.page || 1;
+        const transactions = await Transaction.find({},{__v:false});
+        if(!transactions)
+            return next(appError.create('No transactions found', 404, httpTextStatus.FAIL));
+
+
+        return res.status(200).json({status: httpTextStatus.SUCCESS, data: {
+            transactions:transactions.slice(page*limit - limit , page*limit),
+            pagination: {
+                page,
+                limit,
+                totalCount: transactions.length,
+                totalPages: Math.ceil(transactions.length / limit),
+            }
+        }});
+    }
 )
 
 module.exports = {
     createAdmin,
     login,
     getAllOrders,
-    getAllCustomers
+    getAllCustomers,
+    getAllTransactions
 }

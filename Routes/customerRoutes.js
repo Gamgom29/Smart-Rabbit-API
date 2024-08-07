@@ -31,4 +31,5 @@ router.patch('/resetpassword', customerController.resetPassword);
 router.route('/:id')
             .get(verifyToken , customerController.getProfile)
             .delete(verifyToken , customerController.deleteCustomer);
+router.post('/addAddress' , verifyToken , customerController.addAddress);
 module.exports = router;

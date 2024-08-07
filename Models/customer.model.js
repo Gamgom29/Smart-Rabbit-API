@@ -46,18 +46,10 @@ const customer = new mongoose.Schema({
         required: true,
         unique: true
     },
-    city:{
-        type: String,
-        required: true
-    },
-    neighbourhood:{
-        type: String,
-        required: true
-    },
-    street:{
-        type: String,
-        required: true
-    },
+    addresses:[{
+        type: mongoose.Schema.ObjectId,
+        ref : 'Addresses'
+    }],
     productType:{
         type: String,
         required: true

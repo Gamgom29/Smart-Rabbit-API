@@ -151,7 +151,7 @@ const createOrderPayWithWallet = asyncWrapper(
                 return next(error);
             }
             try{
-                await walletService.takeFromWallet(wallet._id , order.total);
+                await walletService.takeFromWallet(wallet._id , order.shippingPrice);
                 const transaction = await Transaction.create({
                     customerId : id,
                     walletId : wallet._id,
@@ -159,6 +159,9 @@ const createOrderPayWithWallet = asyncWrapper(
                     description:`Order From ${customer.name} has created and money sent to Company`
                 });
                 const company = companyservice.getInstance();
+                companyservice.updateCompany({
+                    treasury:company.treasury + order.shippingPrice
+                });
                 order.paymentStatus = 'Paid';
                 order.shippingPrice = company.shippingPrice;
                 await order.save();
