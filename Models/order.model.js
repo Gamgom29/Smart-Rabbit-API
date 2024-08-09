@@ -14,6 +14,10 @@ const order = mongoose.Schema({
         type: Date,
         required: true
     },
+    pickupTime:{
+        type: String,
+        required: true
+    },
     storePhoneNumber:{
         type: String,
         required: true
@@ -48,6 +52,10 @@ const order = mongoose.Schema({
     },
     receiveDate:{
         type: Date,
+        required: true
+    },
+    receiveTime:{
+        type: String,
         required: true
     },
     paymentMethod:{
