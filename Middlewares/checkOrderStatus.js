@@ -1,7 +1,7 @@
 const Order = require('../Models/order.model');
 
-const CheckPaymentStatus =async  (req , res , next) => {
-    const orderId = req.params.orderId;
+const checkOrderStatus =async  (req , res , next) => {
+    const orderId = req.params.id;
     const order = await Order.findById(orderId);
     if(order.orderStatus === 'Complete')
         return res.status(401).json({status: "fail" , message :"This Order is Already Completed"});
@@ -11,4 +11,4 @@ const CheckPaymentStatus =async  (req , res , next) => {
         return res.status(401).json({status: "fail" , message :"This Order is Already Paid"});
     next();
 }
-module.exports = CheckPaymentStatus;
+module.exports = checkOrderStatus;

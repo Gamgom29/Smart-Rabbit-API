@@ -4,9 +4,9 @@ const appError = require('../utils/appError');
 const httpTextStatus = require('../utils/httpsStatusText');
 const walletService = require('../services/wallet.service');
 const Order = require('../Models/order.model');
-const httpsStatusText = require('../utils/httpsStatusText');
 const companyService = require('../services/company.service');
 const Withdraw = require('../Models/withDraw.model');
+
 const getWallet = asyncWrapper(
     async(req,res,next)=>{
         const customerId = req.params.id;
@@ -27,7 +27,7 @@ const payWithWallet = asyncWrapper(
         
         const wallet = await Wallet.findOne({customerId:order.customerId});
         if(!wallet){
-            return res.status(404).json({status: httpsStatusText.FAIL, message: 'Wallet Not Found'});
+            return res.status(404).json({status: httpTextStatus.FAIL, message: 'Wallet Not Found'});
         }
         walletService.takeFromWallet(wallet._id , order.shippingPrice);
         order.paymentStatus = 'Paid';
@@ -36,7 +36,7 @@ const payWithWallet = asyncWrapper(
             treasury: company.treasury + order.shippingPrice
         });
         await order.save();
-        res.status(200).json({status: httpsStatusText.SUCCESS, message: 'Payment with wallet successful'});
+        res.status(200).json({status: httpTextStatus.SUCCESS, message: 'Payment with wallet successful'});
     }
 );
 
@@ -48,13 +48,14 @@ const withDraw = asyncWrapper(
             let customerId = decodeToken.id;
             const wallet = await Wallet.findOne({customerId: customerId});
             if(!wallet) 
-                return res.status(404).json({status: httpsStatusText.FAIL, message: 'User Not Found'});
+                return res.status(404).json({status: httpTextStatus.FAIL, message: 'User Not Found'});
             
             const withdraw = await Withdraw.create({
                 customerId: customerId,
                 amount: wallet.balance,
                 walletId: wallet._id
             });
+            res.status(200).json({status:httpTextStatus.SUCCESS , data:{withdraw} , message:'Wtih Draw Request Created Successfully'});
     }
 )
 module.exports ={

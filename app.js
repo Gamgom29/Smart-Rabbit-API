@@ -25,6 +25,7 @@ app.use('/api/customers',require('./Routes/customerRoutes'));
 app.use('/api/orders' , require('./Routes/orderRoutes'));
 app.use('/api/payment' , require('./Routes/paymentRoutes'));
 app.use('/api/wallets' , require('./Routes/walletRoutes'));
+app.use('/api/transactions' , require('./Routes/transactionsRoutes'));
 app.use('/api/admin' , require('./Routes/adminRoutes'));
 app.use(errorHandler);
 app.all('*' , (req, res,next)=>{

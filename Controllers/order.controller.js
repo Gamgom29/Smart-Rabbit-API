@@ -1,7 +1,5 @@
 const Order = require('../Models/order.model.js');
 const Customer = require('../Models/customer.model.js');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const asyncWrapper = require('../Middlewares/asyncWrapper');
 const appError = require('../utils/appError.js');
 const httpTextStatus = require('../utils/httpsStatusText.js');
@@ -26,10 +24,7 @@ const getOrder = asyncWrapper(
 
 const CreateOrder = asyncWrapper(
     async (req,res,next)=>{
-            let token = req.headers['Authorization'] || req.headers['authorization'];
-            token = token.split(' ')[1];
-            const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
-            let id = decodeToken.id;
+            const id = req.currentUser;
             const customer = await Customer.findById(id);
             if(!customer){
                 return next(appError.create('No User To Create Order ' , 404 , httpTextStatus.FAIL));
@@ -71,15 +66,21 @@ const deleteOrder = asyncWrapper(
     }
 
 );
-
-const changeOrderPaymentStatus = asyncWrapper(
+const getOrderStatus = asyncWrapper(
     async (req,res,next)=>{
-        const order = await Order.findByIdAndUpdate(req.params.id, req.body, {new: true});
+        const id = req.params.id;
+        const order = await Order.findById(id);
         if(!order){
             const error = appError.create('Order not found' , 404 , httpTextStatus.FAIL );
             return next(error);
         }
-        return res.status(200).json({status: httpTextStatus.SUCCESS, data:order});
+        return res.status(200).json({status: httpTextStatus.SUCCESS, data:{
+            order:{
+                orderStatus:order.orderStatus,
+                paymentStatus:order.paymentStatus,
+                createdAt:order.createdAt
+            }
+        }});
     }
 );
 
@@ -129,10 +130,7 @@ const changeOrderState = asyncWrapper(
 
 const createOrderPayWithWallet = asyncWrapper(
     async(req,res,next)=>{
-        let token = req.headers['Authorization'] || req.headers['authorization'];
-            token = token.split(' ')[1];
-            const decodeToken = jwt.decode(token , process.env.JWT_SECRET);
-            let id = decodeToken.id;
+            const id = req.currentUser;
             const customer = await Customer.findById(id);
             if(!customer){
                 return next(appError.create('No User To Create Order ' , 404 , httpTextStatus.FAIL));
@@ -183,5 +181,6 @@ module.exports = {
     getAllOrders,
     deleteOrder,
     changeOrderState,
-    createOrderPayWithWallet
+    createOrderPayWithWallet,
+    getOrderStatus
 }
