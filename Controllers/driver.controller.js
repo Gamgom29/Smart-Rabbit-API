@@ -37,8 +37,6 @@ const register = asyncWrapper(
                     nationalIdPhotoBack:files.nationalIdPhotoBack[0].filename,
                     license:files.license[0].filename
                 });
-                const token = generateToken({email: data.email  , phone: data.phone , id : driver._id});
-                driver.token = token;
                 await driver.save();
                 const email = new Email(driver,'');
                 await email.sendWelcome();
@@ -48,6 +46,24 @@ const register = asyncWrapper(
         else return next(appError.create('There is Missed Photos ' , 500 , httpTextStatus.FAIL)); 
     }
 );
+
+const login = asyncWrapper(
+    async(req , res , next)=>{
+        const {phone, password} = req.body;
+        const driver = await Driver.findOne({phone});
+        if(!driver){
+            return next(appError.create('Driver not found', 404, httpTextStatus.FAIL));
+        }
+        const isMatch = await bcrypt.compare(password, driver.password);
+        if(!isMatch){
+            return next(appError.create('Invalid Password', 401, httpTextStatus.FAIL));
+        }
+        const token = generateToken({email: driver.email  , phone: driver.phone , id : driver._id});
+        driver.token = token;
+        await driver.save();
+        res.status(200).json({status:httpTextStatus.SUCCESS, data: {driver}});
+    }
+)
 module.exports ={
-    register
+    register,login
 }

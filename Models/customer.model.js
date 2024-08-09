@@ -66,4 +66,5 @@ customer.methods.generateOTP = function(){
     this.OTPExp = Date.now() + 10 * 60 * 1000; // 10 minutes
     return Otp;
 }
+mongoose.set('strictPopulate', false);
 module.exports = mongoose.model('Customer', customer);

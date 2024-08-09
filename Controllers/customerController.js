@@ -37,8 +37,6 @@ const register = asyncWrapper(
                     nationalIdPhotoBack:files.nationalIdPhotoBack[0].filename,
                     taxNumberPhoto:files.taxNumberPhoto[0].filename
                 });
-                const token = generateToken({email: data.email  , phone: data.phone , id : customer._id});
-                customer.token = token;
                 await customer.save();
                 const email = new Email(customer,'');
                 await email.sendWelcome();
@@ -121,7 +119,7 @@ const checkOTP = asyncWrapper(
         await customer.save({validateBeforeSave:false});
         res.status(200).json({status:httpTextStatus.SUCCESS , message : 'Valid OTP Code Go To Change Password' , resetToken} );
     }
-)
+);
 const resetPassword = asyncWrapper(
     async(req , res , next)=>{
         const token = req.headers['resetpassword'].split(' ')[1];
@@ -175,7 +173,7 @@ const addAddress = asyncWrapper(
             return next( appError.create('Failed to add address', 500, httpTextStatus.FAIL));
         res.status(200).json({status:httpTextStatus.SUCCESS, message : 'Address added successfully' , data:address});
     }
-)
+);
 const getProfile = asyncWrapper(
     async(req,res,next)=>{
         const id = req.params.id;
